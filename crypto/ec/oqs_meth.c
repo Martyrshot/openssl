@@ -743,7 +743,6 @@ static void oqs_pkey_ctx_free(OQS_KEY* key) {
 static int oqs_key_init(OQS_KEY **p_oqs_key, int nid, oqs_key_type_t keytype) {
     OQS_KEY *oqs_key = NULL;
     const char* oqs_alg_name = get_oqs_alg_name(nid);
-
     oqs_key = OPENSSL_zalloc(sizeof(*oqs_key));
     if (oqs_key == NULL) {
       ECerr(0, ERR_R_MALLOC_FAILURE);
@@ -1329,6 +1328,94 @@ int oqs_ameth_pkey_ctrl(EVP_PKEY *pkey, int op, long arg1, void *arg2) {
    return 0;
 }
 
+// TODO need to do cleanup, currently has memory leak
+static int oqs_set_priv_key(EVP_PKEY *pkey, const unsigned char *priv,
+                            size_t len)
+{
+    OQS_KEY *oqs_key = EVP_PKEY_get0(pkey);
+    if (oqs_key == NULL && !oqs_key_init(&oqs_key, pkey->ameth->pkey_id, 0)) {
+        ECerr(EC_F_PKEY_OQS_KEYGEN, ERR_R_FATAL);
+        return 0;
+    }
+    if (len != oqs_key->s->length_secret_key) {
+        ECerr(EC_F_ECX_KEY_OP, EC_R_INVALID_ENCODING);
+	return 0;
+    }
+    oqs_key->pubkey = OPENSSL_secure_malloc(len);
+    if (oqs_key->pubkey == NULL) {
+        ECerr(EC_F_ECX_KEY_OP, ERR_R_MALLOC_FAILURE);
+        return 0;
+    }
+    memcpy(oqs_key->privkey, priv, len);
+    // currently would need to call set_pub in addition to this function
+    // until I find out if oqs supports generating a public key based off
+    // a private key
+    return EVP_PKEY_assign(pkey, pkey->ameth->pkey_id, oqs_key);
+
+}
+
+static int oqs_set_pub_key(EVP_PKEY *pkey, const unsigned char *pub, size_t len)
+{
+    OQS_KEY *oqs_key = EVP_PKEY_get0(pkey);
+    if (oqs_key == NULL && !oqs_key_init(&oqs_key, pkey->ameth->pkey_id, 1)) {
+        ECerr(EC_F_PKEY_OQS_KEYGEN, ERR_R_FATAL);
+        return 0;
+    }
+    if (oqs_key->pubkey == NULL) {
+        ECerr(EC_F_ECX_KEY_OP, ERR_R_MALLOC_FAILURE);
+        return 0;
+    }
+    if (len != oqs_key->s->length_public_key) {
+        ECerr(EC_F_ECX_KEY_OP, EC_R_INVALID_ENCODING);
+	return 0;
+    }
+    oqs_key->pubkey = OPENSSL_secure_malloc(len);
+    memcpy(oqs_key->pubkey, pub, len);
+    return EVP_PKEY_assign(pkey, pkey->ameth->pkey_id, oqs_key);
+    
+}
+
+
+static int oqs_get_priv_key(const EVP_PKEY *pkey, unsigned char *priv,
+                            size_t *len)
+{
+    const OQS_KEY *key = pkey->pkey.ptr;
+
+    if (priv == NULL) {
+        *len = key->s->length_secret_key;
+        return 1;
+    }
+
+    if (key == NULL
+            || key->privkey == NULL
+            || *len < (size_t)key->s->length_secret_key)
+        return 0;
+
+    *len = key->s->length_secret_key;
+    memcpy(priv, key->privkey, *len);
+
+    return 1;
+}
+
+static int oqs_get_pub_key(const EVP_PKEY *pkey, unsigned char *pub,
+                           size_t *len)
+{
+    const OQS_KEY *key = pkey->pkey.ptr;
+
+    if (pub == NULL) {
+        *len = key->s->length_public_key;
+        return 1;
+    }
+
+    if (key == NULL
+            || *len < (size_t)key->s->length_public_key)
+        return 0;
+
+    *len = key->s->length_public_key;
+    memcpy(pub, key->pubkey, *len);
+
+    return 1;
+}
 #define DEFINE_OQS_EVP_PKEY_ASN1_METHOD(ALG, NID_ALG, SHORT_NAME, LONG_NAME) \
 const EVP_PKEY_ASN1_METHOD ALG##_asn1_meth = { \
     NID_ALG,                                   \
@@ -1355,7 +1442,11 @@ const EVP_PKEY_ASN1_METHOD ALG##_asn1_meth = { \
     oqs_item_verify,                           \
     oqs_item_sign_##ALG,                       \
     oqs_sig_info_set_##ALG,                    \
-    0, 0, 0, 0, 0,                             \
+    0, 0, 0,                                   \
+    oqs_set_priv_key,                          \
+    oqs_set_pub_key,                           \
+    oqs_get_priv_key,                          \
+    oqs_get_pub_key,                           \
 };
 
 static int pkey_oqs_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey)
