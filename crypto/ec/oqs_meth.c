@@ -1341,8 +1341,8 @@ static int oqs_set_priv_key(EVP_PKEY *pkey, const unsigned char *priv,
         ECerr(EC_F_ECX_KEY_OP, EC_R_INVALID_ENCODING);
 	return 0;
     }
-    oqs_key->pubkey = OPENSSL_secure_malloc(len);
-    if (oqs_key->pubkey == NULL) {
+    oqs_key->privkey = OPENSSL_secure_malloc(len);
+    if (oqs_key->privkey == NULL) {
         ECerr(EC_F_ECX_KEY_OP, ERR_R_MALLOC_FAILURE);
         return 0;
     }
@@ -1370,6 +1370,10 @@ static int oqs_set_pub_key(EVP_PKEY *pkey, const unsigned char *pub, size_t len)
 	return 0;
     }
     oqs_key->pubkey = OPENSSL_secure_malloc(len);
+    if (oqs_key->pubkey == NULL) {
+        ECerr(EC_F_ECX_KEY_OP, ERR_R_MALLOC_FAILURE);
+        return 0;
+    }
     memcpy(oqs_key->pubkey, pub, len);
     return EVP_PKEY_assign(pkey, pkey->ameth->pkey_id, oqs_key);
     
