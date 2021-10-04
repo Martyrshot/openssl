@@ -1328,7 +1328,6 @@ int oqs_ameth_pkey_ctrl(EVP_PKEY *pkey, int op, long arg1, void *arg2) {
    return 0;
 }
 
-// TODO need to do cleanup, currently has memory leak
 static int oqs_set_priv_key(EVP_PKEY *pkey, const unsigned char *priv,
                             size_t len)
 {
@@ -1341,15 +1340,15 @@ static int oqs_set_priv_key(EVP_PKEY *pkey, const unsigned char *priv,
         ECerr(EC_F_ECX_KEY_OP, EC_R_INVALID_ENCODING);
 	return 0;
     }
-    oqs_key->privkey = OPENSSL_secure_malloc(len);
+    oqs_key->privkey = OPENSSL_secure_zalloc(len);
     if (oqs_key->privkey == NULL) {
         ECerr(EC_F_ECX_KEY_OP, ERR_R_MALLOC_FAILURE);
         return 0;
     }
     memcpy(oqs_key->privkey, priv, len);
-    // currently would need to call set_pub in addition to this function
-    // until I find out if oqs supports generating a public key based off
-    // a private key
+    // Since not all PQC schemes can derive their public keys from
+    // their private keys, this will return an EVP_PKEY that contains
+    // only private key information.
     return EVP_PKEY_assign(pkey, pkey->ameth->pkey_id, oqs_key);
 
 }
@@ -1369,7 +1368,7 @@ static int oqs_set_pub_key(EVP_PKEY *pkey, const unsigned char *pub, size_t len)
         ECerr(EC_F_ECX_KEY_OP, EC_R_INVALID_ENCODING);
 	return 0;
     }
-    oqs_key->pubkey = OPENSSL_secure_malloc(len);
+    oqs_key->pubkey = OPENSSL_zalloc(len);
     if (oqs_key->pubkey == NULL) {
         ECerr(EC_F_ECX_KEY_OP, ERR_R_MALLOC_FAILURE);
         return 0;
