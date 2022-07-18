@@ -220,10 +220,10 @@ static const TLS_GROUP_INFO oqs_nid_list[] = {
     {NID_hqc192, 192, TLS_CURVE_CUSTOM}, /* hqc192 (0x022D) */
     {NID_hqc256, 256, TLS_CURVE_CUSTOM}, /* hqc256 (0x022E) */
     {NID_ntrulpr653, 128, TLS_CURVE_CUSTOM}, /* ntrulpr653 (0x022F) */
-    {NID_ntrulpr761, 192, TLS_CURVE_CUSTOM}, /* ntrulpr761 (0x0230) */
+    {NID_ntrulpr761, 128, TLS_CURVE_CUSTOM}, /* ntrulpr761 (0x0230) */
     {NID_ntrulpr857, 192, TLS_CURVE_CUSTOM}, /* ntrulpr857 (0x0231) */
     {NID_sntrup653, 128, TLS_CURVE_CUSTOM}, /* sntrup653 (0x0232) */
-    {NID_sntrup761, 192, TLS_CURVE_CUSTOM}, /* sntrup761 (0x0233) */
+    {NID_sntrup761, 128, TLS_CURVE_CUSTOM}, /* sntrup761 (0x0233) */
     {NID_sntrup857, 192, TLS_CURVE_CUSTOM}, /* sntrup857 (0x0234) */
 ///// OQS_TEMPLATE_FRAGMENT_OQS_NID_LIST_END
 };
@@ -263,10 +263,10 @@ static const TLS_GROUP_INFO oqs_hybrid_nid_list[] = {
  {NID_p384_hqc192, 192, TLS_CURVE_CUSTOM}, /* p256/384/521 + hqc192 hybrid (0x022D) */
  {NID_p521_hqc256, 256, TLS_CURVE_CUSTOM}, /* p256/384/521 + hqc256 hybrid (0x022E) */
  {NID_p256_ntrulpr653, 128, TLS_CURVE_CUSTOM}, /* p256/384/521 + ntrulpr653 hybrid (0x022F) */
- {NID_p384_ntrulpr761, 192, TLS_CURVE_CUSTOM}, /* p256/384/521 + ntrulpr761 hybrid (0x0230) */
+ {NID_p256_ntrulpr761, 128, TLS_CURVE_CUSTOM}, /* p256/384/521 + ntrulpr761 hybrid (0x0230) */
  {NID_p384_ntrulpr857, 192, TLS_CURVE_CUSTOM}, /* p256/384/521 + ntrulpr857 hybrid (0x0231) */
  {NID_p256_sntrup653, 128, TLS_CURVE_CUSTOM}, /* p256/384/521 + sntrup653 hybrid (0x0232) */
- {NID_p384_sntrup761, 192, TLS_CURVE_CUSTOM}, /* p256/384/521 + sntrup761 hybrid (0x0233) */
+ {NID_p256_sntrup761, 128, TLS_CURVE_CUSTOM}, /* p256/384/521 + sntrup761 hybrid (0x0233) */
  {NID_p384_sntrup857, 192, TLS_CURVE_CUSTOM}, /* p256/384/521 + sntrup857 hybrid (0x0234) */
 ///// OQS_TEMPLATE_FRAGMENT_OQS_NID_LIST_HYBRID_END
 };
@@ -298,7 +298,9 @@ static const uint16_t eccurves_default[] = {
     0x2F3E, /* OQS kyber90s512 hybrid */
     0x2F2C, /* OQS hqc128 hybrid */
     0x2F2F, /* OQS ntrulpr653 hybrid */
+    0x2F30, /* OQS ntrulpr761 hybrid */
     0x2F32, /* OQS sntrup653 hybrid */
+    0x2F33, /* OQS sntrup761 hybrid */
 ///// OQS_TEMPLATE_FRAGMENT_ECCURVES_DEFAULT_HYBRID_END
 };
 
@@ -949,26 +951,24 @@ static const uint16_t tls12_sigalgs[] = {
     TLSEXT_SIGALG_rsa3072_falcon512,
     TLSEXT_SIGALG_falcon1024,
     TLSEXT_SIGALG_p521_falcon1024,
-    TLSEXT_SIGALG_picnicl1full,
-    TLSEXT_SIGALG_p256_picnicl1full,
-    TLSEXT_SIGALG_rsa3072_picnicl1full,
-    TLSEXT_SIGALG_picnic3l1,
-    TLSEXT_SIGALG_p256_picnic3l1,
-    TLSEXT_SIGALG_rsa3072_picnic3l1,
-    TLSEXT_SIGALG_rainbowIclassic,
-    TLSEXT_SIGALG_p256_rainbowIclassic,
-    TLSEXT_SIGALG_rsa3072_rainbowIclassic,
-    TLSEXT_SIGALG_rainbowVclassic,
-    TLSEXT_SIGALG_p521_rainbowVclassic,
     TLSEXT_SIGALG_sphincsharaka128frobust,
     TLSEXT_SIGALG_p256_sphincsharaka128frobust,
     TLSEXT_SIGALG_rsa3072_sphincsharaka128frobust,
+    TLSEXT_SIGALG_sphincsharaka128srobust,
+    TLSEXT_SIGALG_p256_sphincsharaka128srobust,
+    TLSEXT_SIGALG_rsa3072_sphincsharaka128srobust,
     TLSEXT_SIGALG_sphincssha256128frobust,
     TLSEXT_SIGALG_p256_sphincssha256128frobust,
     TLSEXT_SIGALG_rsa3072_sphincssha256128frobust,
+    TLSEXT_SIGALG_sphincssha256128srobust,
+    TLSEXT_SIGALG_p256_sphincssha256128srobust,
+    TLSEXT_SIGALG_rsa3072_sphincssha256128srobust,
     TLSEXT_SIGALG_sphincsshake256128frobust,
     TLSEXT_SIGALG_p256_sphincsshake256128frobust,
     TLSEXT_SIGALG_rsa3072_sphincsshake256128frobust,
+    TLSEXT_SIGALG_sphincsshake256128srobust,
+    TLSEXT_SIGALG_p256_sphincsshake256128srobust,
+    TLSEXT_SIGALG_rsa3072_sphincsshake256128srobust,
 ///// OQS_TEMPLATE_FRAGMENT_DEFINE_TLS12_SIGALGS_END
 
     TLSEXT_SIGALG_rsa_pss_pss_sha256,
@@ -1156,39 +1156,6 @@ static const SIGALG_LOOKUP sigalg_lookup_tbl[] = {
     {"p521_falcon1024", TLSEXT_SIGALG_p521_falcon1024,
      NID_undef, -1, EVP_PKEY_P521_FALCON1024, SSL_PKEY_P521_FALCON1024,
      NID_undef, NID_undef},
-    {"picnicl1full", TLSEXT_SIGALG_picnicl1full,
-     NID_undef, -1, EVP_PKEY_PICNICL1FULL, SSL_PKEY_PICNICL1FULL,
-     NID_undef, NID_undef},
-    {"p256_picnicl1full", TLSEXT_SIGALG_p256_picnicl1full,
-     NID_undef, -1, EVP_PKEY_P256_PICNICL1FULL, SSL_PKEY_P256_PICNICL1FULL,
-     NID_undef, NID_undef},
-    {"rsa3072_picnicl1full", TLSEXT_SIGALG_rsa3072_picnicl1full,
-     NID_undef, -1, EVP_PKEY_RSA3072_PICNICL1FULL, SSL_PKEY_RSA3072_PICNICL1FULL,
-     NID_undef, NID_undef},
-    {"picnic3l1", TLSEXT_SIGALG_picnic3l1,
-     NID_undef, -1, EVP_PKEY_PICNIC3L1, SSL_PKEY_PICNIC3L1,
-     NID_undef, NID_undef},
-    {"p256_picnic3l1", TLSEXT_SIGALG_p256_picnic3l1,
-     NID_undef, -1, EVP_PKEY_P256_PICNIC3L1, SSL_PKEY_P256_PICNIC3L1,
-     NID_undef, NID_undef},
-    {"rsa3072_picnic3l1", TLSEXT_SIGALG_rsa3072_picnic3l1,
-     NID_undef, -1, EVP_PKEY_RSA3072_PICNIC3L1, SSL_PKEY_RSA3072_PICNIC3L1,
-     NID_undef, NID_undef},
-    {"rainbowIclassic", TLSEXT_SIGALG_rainbowIclassic,
-     NID_undef, -1, EVP_PKEY_RAINBOWICLASSIC, SSL_PKEY_RAINBOWICLASSIC,
-     NID_undef, NID_undef},
-    {"p256_rainbowIclassic", TLSEXT_SIGALG_p256_rainbowIclassic,
-     NID_undef, -1, EVP_PKEY_P256_RAINBOWICLASSIC, SSL_PKEY_P256_RAINBOWICLASSIC,
-     NID_undef, NID_undef},
-    {"rsa3072_rainbowIclassic", TLSEXT_SIGALG_rsa3072_rainbowIclassic,
-     NID_undef, -1, EVP_PKEY_RSA3072_RAINBOWICLASSIC, SSL_PKEY_RSA3072_RAINBOWICLASSIC,
-     NID_undef, NID_undef},
-    {"rainbowVclassic", TLSEXT_SIGALG_rainbowVclassic,
-     NID_undef, -1, EVP_PKEY_RAINBOWVCLASSIC, SSL_PKEY_RAINBOWVCLASSIC,
-     NID_undef, NID_undef},
-    {"p521_rainbowVclassic", TLSEXT_SIGALG_p521_rainbowVclassic,
-     NID_undef, -1, EVP_PKEY_P521_RAINBOWVCLASSIC, SSL_PKEY_P521_RAINBOWVCLASSIC,
-     NID_undef, NID_undef},
     {"sphincsharaka128frobust", TLSEXT_SIGALG_sphincsharaka128frobust,
      NID_undef, -1, EVP_PKEY_SPHINCSHARAKA128FROBUST, SSL_PKEY_SPHINCSHARAKA128FROBUST,
      NID_undef, NID_undef},
@@ -1197,6 +1164,15 @@ static const SIGALG_LOOKUP sigalg_lookup_tbl[] = {
      NID_undef, NID_undef},
     {"rsa3072_sphincsharaka128frobust", TLSEXT_SIGALG_rsa3072_sphincsharaka128frobust,
      NID_undef, -1, EVP_PKEY_RSA3072_SPHINCSHARAKA128FROBUST, SSL_PKEY_RSA3072_SPHINCSHARAKA128FROBUST,
+     NID_undef, NID_undef},
+    {"sphincsharaka128srobust", TLSEXT_SIGALG_sphincsharaka128srobust,
+     NID_undef, -1, EVP_PKEY_SPHINCSHARAKA128SROBUST, SSL_PKEY_SPHINCSHARAKA128SROBUST,
+     NID_undef, NID_undef},
+    {"p256_sphincsharaka128srobust", TLSEXT_SIGALG_p256_sphincsharaka128srobust,
+     NID_undef, -1, EVP_PKEY_P256_SPHINCSHARAKA128SROBUST, SSL_PKEY_P256_SPHINCSHARAKA128SROBUST,
+     NID_undef, NID_undef},
+    {"rsa3072_sphincsharaka128srobust", TLSEXT_SIGALG_rsa3072_sphincsharaka128srobust,
+     NID_undef, -1, EVP_PKEY_RSA3072_SPHINCSHARAKA128SROBUST, SSL_PKEY_RSA3072_SPHINCSHARAKA128SROBUST,
      NID_undef, NID_undef},
     {"sphincssha256128frobust", TLSEXT_SIGALG_sphincssha256128frobust,
      NID_undef, -1, EVP_PKEY_SPHINCSSHA256128FROBUST, SSL_PKEY_SPHINCSSHA256128FROBUST,
@@ -1207,6 +1183,15 @@ static const SIGALG_LOOKUP sigalg_lookup_tbl[] = {
     {"rsa3072_sphincssha256128frobust", TLSEXT_SIGALG_rsa3072_sphincssha256128frobust,
      NID_undef, -1, EVP_PKEY_RSA3072_SPHINCSSHA256128FROBUST, SSL_PKEY_RSA3072_SPHINCSSHA256128FROBUST,
      NID_undef, NID_undef},
+    {"sphincssha256128srobust", TLSEXT_SIGALG_sphincssha256128srobust,
+     NID_undef, -1, EVP_PKEY_SPHINCSSHA256128SROBUST, SSL_PKEY_SPHINCSSHA256128SROBUST,
+     NID_undef, NID_undef},
+    {"p256_sphincssha256128srobust", TLSEXT_SIGALG_p256_sphincssha256128srobust,
+     NID_undef, -1, EVP_PKEY_P256_SPHINCSSHA256128SROBUST, SSL_PKEY_P256_SPHINCSSHA256128SROBUST,
+     NID_undef, NID_undef},
+    {"rsa3072_sphincssha256128srobust", TLSEXT_SIGALG_rsa3072_sphincssha256128srobust,
+     NID_undef, -1, EVP_PKEY_RSA3072_SPHINCSSHA256128SROBUST, SSL_PKEY_RSA3072_SPHINCSSHA256128SROBUST,
+     NID_undef, NID_undef},
     {"sphincsshake256128frobust", TLSEXT_SIGALG_sphincsshake256128frobust,
      NID_undef, -1, EVP_PKEY_SPHINCSSHAKE256128FROBUST, SSL_PKEY_SPHINCSSHAKE256128FROBUST,
      NID_undef, NID_undef},
@@ -1215,6 +1200,15 @@ static const SIGALG_LOOKUP sigalg_lookup_tbl[] = {
      NID_undef, NID_undef},
     {"rsa3072_sphincsshake256128frobust", TLSEXT_SIGALG_rsa3072_sphincsshake256128frobust,
      NID_undef, -1, EVP_PKEY_RSA3072_SPHINCSSHAKE256128FROBUST, SSL_PKEY_RSA3072_SPHINCSSHAKE256128FROBUST,
+     NID_undef, NID_undef},
+    {"sphincsshake256128srobust", TLSEXT_SIGALG_sphincsshake256128srobust,
+     NID_undef, -1, EVP_PKEY_SPHINCSSHAKE256128SROBUST, SSL_PKEY_SPHINCSSHAKE256128SROBUST,
+     NID_undef, NID_undef},
+    {"p256_sphincsshake256128srobust", TLSEXT_SIGALG_p256_sphincsshake256128srobust,
+     NID_undef, -1, EVP_PKEY_P256_SPHINCSSHAKE256128SROBUST, SSL_PKEY_P256_SPHINCSSHAKE256128SROBUST,
+     NID_undef, NID_undef},
+    {"rsa3072_sphincsshake256128srobust", TLSEXT_SIGALG_rsa3072_sphincsshake256128srobust,
+     NID_undef, -1, EVP_PKEY_RSA3072_SPHINCSSHAKE256128SROBUST, SSL_PKEY_RSA3072_SPHINCSSHAKE256128SROBUST,
      NID_undef, NID_undef},
 ///// OQS_TEMPLATE_FRAGMENT_POPULATE_SIGALG_TBL_END
 };
@@ -1497,33 +1491,17 @@ static int sigalg_security_bits(const SIGALG_LOOKUP *lu)
             secbits = 256;
         else if(lu->sigalg == TLSEXT_SIGALG_p521_falcon1024)
             secbits = 256;
-        else if(lu->sigalg == TLSEXT_SIGALG_picnicl1full)
-            secbits = 128;
-        else if(lu->sigalg == TLSEXT_SIGALG_p256_picnicl1full)
-            secbits = 128;
-        else if(lu->sigalg == TLSEXT_SIGALG_rsa3072_picnicl1full)
-            secbits = 128;
-        else if(lu->sigalg == TLSEXT_SIGALG_picnic3l1)
-            secbits = 128;
-        else if(lu->sigalg == TLSEXT_SIGALG_p256_picnic3l1)
-            secbits = 128;
-        else if(lu->sigalg == TLSEXT_SIGALG_rsa3072_picnic3l1)
-            secbits = 128;
-        else if(lu->sigalg == TLSEXT_SIGALG_rainbowIclassic)
-            secbits = 128;
-        else if(lu->sigalg == TLSEXT_SIGALG_p256_rainbowIclassic)
-            secbits = 128;
-        else if(lu->sigalg == TLSEXT_SIGALG_rsa3072_rainbowIclassic)
-            secbits = 128;
-        else if(lu->sigalg == TLSEXT_SIGALG_rainbowVclassic)
-            secbits = 256;
-        else if(lu->sigalg == TLSEXT_SIGALG_p521_rainbowVclassic)
-            secbits = 256;
         else if(lu->sigalg == TLSEXT_SIGALG_sphincsharaka128frobust)
             secbits = 128;
         else if(lu->sigalg == TLSEXT_SIGALG_p256_sphincsharaka128frobust)
             secbits = 128;
         else if(lu->sigalg == TLSEXT_SIGALG_rsa3072_sphincsharaka128frobust)
+            secbits = 128;
+        else if(lu->sigalg == TLSEXT_SIGALG_sphincsharaka128srobust)
+            secbits = 128;
+        else if(lu->sigalg == TLSEXT_SIGALG_p256_sphincsharaka128srobust)
+            secbits = 128;
+        else if(lu->sigalg == TLSEXT_SIGALG_rsa3072_sphincsharaka128srobust)
             secbits = 128;
         else if(lu->sigalg == TLSEXT_SIGALG_sphincssha256128frobust)
             secbits = 128;
@@ -1531,11 +1509,23 @@ static int sigalg_security_bits(const SIGALG_LOOKUP *lu)
             secbits = 128;
         else if(lu->sigalg == TLSEXT_SIGALG_rsa3072_sphincssha256128frobust)
             secbits = 128;
+        else if(lu->sigalg == TLSEXT_SIGALG_sphincssha256128srobust)
+            secbits = 128;
+        else if(lu->sigalg == TLSEXT_SIGALG_p256_sphincssha256128srobust)
+            secbits = 128;
+        else if(lu->sigalg == TLSEXT_SIGALG_rsa3072_sphincssha256128srobust)
+            secbits = 128;
         else if(lu->sigalg == TLSEXT_SIGALG_sphincsshake256128frobust)
             secbits = 128;
         else if(lu->sigalg == TLSEXT_SIGALG_p256_sphincsshake256128frobust)
             secbits = 128;
         else if(lu->sigalg == TLSEXT_SIGALG_rsa3072_sphincsshake256128frobust)
+            secbits = 128;
+        else if(lu->sigalg == TLSEXT_SIGALG_sphincsshake256128srobust)
+            secbits = 128;
+        else if(lu->sigalg == TLSEXT_SIGALG_p256_sphincsshake256128srobust)
+            secbits = 128;
+        else if(lu->sigalg == TLSEXT_SIGALG_rsa3072_sphincsshake256128srobust)
             secbits = 128;
 ///// OQS_TEMPLATE_FRAGMENT_MAP_SIGALG_TO_BIT_SECURITY_END
     }
@@ -2974,26 +2964,24 @@ void tls1_set_cert_validity(SSL *s)
     tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_RSA3072_FALCON512);
     tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_FALCON1024);
     tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_P521_FALCON1024);
-    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_PICNICL1FULL);
-    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_P256_PICNICL1FULL);
-    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_RSA3072_PICNICL1FULL);
-    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_PICNIC3L1);
-    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_P256_PICNIC3L1);
-    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_RSA3072_PICNIC3L1);
-    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_RAINBOWICLASSIC);
-    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_P256_RAINBOWICLASSIC);
-    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_RSA3072_RAINBOWICLASSIC);
-    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_RAINBOWVCLASSIC);
-    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_P521_RAINBOWVCLASSIC);
     tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_SPHINCSHARAKA128FROBUST);
     tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_P256_SPHINCSHARAKA128FROBUST);
     tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_RSA3072_SPHINCSHARAKA128FROBUST);
+    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_SPHINCSHARAKA128SROBUST);
+    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_P256_SPHINCSHARAKA128SROBUST);
+    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_RSA3072_SPHINCSHARAKA128SROBUST);
     tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_SPHINCSSHA256128FROBUST);
     tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_P256_SPHINCSSHA256128FROBUST);
     tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_RSA3072_SPHINCSSHA256128FROBUST);
+    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_SPHINCSSHA256128SROBUST);
+    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_P256_SPHINCSSHA256128SROBUST);
+    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_RSA3072_SPHINCSSHA256128SROBUST);
     tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_SPHINCSSHAKE256128FROBUST);
     tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_P256_SPHINCSSHAKE256128FROBUST);
     tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_RSA3072_SPHINCSSHAKE256128FROBUST);
+    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_SPHINCSSHAKE256128SROBUST);
+    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_P256_SPHINCSSHAKE256128SROBUST);
+    tls1_check_chain(s, NULL, NULL, NULL, SSL_PKEY_RSA3072_SPHINCSSHAKE256128SROBUST);
 ///// OQS_TEMPLATE_FRAGMENT_ADD_CERT_CHAIN_CHECKS_END
 }
 
